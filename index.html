@@ -22,7 +22,7 @@ h2{margin:0 0 10px;font-size:17px;font-weight:700}
 @media(max-width:900px){.grid{grid-template-columns:1fr}.col{display:contents}.col:first-child>.card:first-child{order:-2}.col:last-child>.card:first-child{order:-1}}
 .help{margin-top:14px;padding-top:12px;border-top:1px dashed var(--bd)}
 .help p{margin:0 0 8px;font-size:13px;color:var(--mut)}
-#roHint{grid-template-columns:1fr;margin-top:10px}
+#roHint{margin-top:10px}
 .col{display:grid;gap:16px}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;box-shadow:0 2px 0 var(--bd)}
 .btn{font:600 14px "Plus Jakarta Sans",sans-serif;color:var(--tx);background:var(--soft);border:1px solid var(--bd);border-radius:10px;padding:9px 12px;cursor:pointer;transition:transform .08s}
@@ -118,16 +118,8 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
       </div>
       <div id="fb" class="fb" hidden></div>
       <div class="info"><span>Skor: <b id="score">0 benar dari 0</b></span></div>
-      <div class="help">
-        <p>Sudah coba baca sendiri? Baru buka bantuan.</p>
-        <div class="row"><button class="btn" id="bLr">👁️ Tampilkan cara hitung</button><button class="btn" id="bSol">Lihat pembahasan</button></div>
-        <div class="ro" id="roHint" hidden>
-        <div><small>Skala utama (SU)</small><b id="rsu">?</b></div>
-        <div><small>Skala nonius (SN)</small><b id="rsn">?</b></div>
-        <div><small>Hasil</small><b id="rres">?</b></div>
-      </div>
-        <div id="sol" class="sol" hidden></div>
-      </div>
+      <div class="info"><span>Skor: <b id="score">0 benar dari 0</b></span><button class="btn" id="bSol" style="flex:none;padding:5px 10px">Lihat pembahasan</button></div>
+      <div id="sol" class="sol" hidden></div>
     </section>
   </div>
 
@@ -137,6 +129,15 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
         <span class="st" id="st"></span>
       </div>
       <div class="stage"><canvas id="cv" tabindex="0" aria-label="Alat ukur. Seret ke kiri atau kanan untuk menggeser rahang."></canvas></div>
+      <div class="help">
+        <p>Sudah coba baca sendiri? Baru buka bantuan.</p>
+        <button class="btn" id="bLr">👁️ Tampilkan cara hitung</button>
+        <div class="ro" id="roHint" hidden>
+        <div><small>Skala utama (SU)</small><b id="rsu">?</b></div>
+        <div><small>Skala nonius (SN)</small><b id="rsn">?</b></div>
+        <div><small>Hasil</small><b id="rres">?</b></div>
+      </div>
+      </div>
     </section>
     <section class="card f2">
       <div><b>Jangka sorong</b><code>Hasil = SU + SN × 0,05 mm</code>SU: garis mm tepat di kiri angka nol nonius. SN: nomor garis nonius yang lurus dengan garis skala utama.</div>
