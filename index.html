@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JamikSim – Simulator Jangka Sorong &amp; Mikrometer Sekrup</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf1f7;--grid:#c9d8e6;--card:#fff;--tx:#10243a;--mut:#51657a;--bd:#cbd9e6;--soft:#eef4fa;--pri:#0e7490;--br:#b7791f;--ok:#047857;--bad:#be123c;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08121f;--grid:#12263b;--card:#0f1d2e;--tx:#e6f0fa;--mut:#8da4bb;--bd:#223a52;--soft:#152a40;--pri:#22d3ee;--br:#fbbf24;--ok:#34d399;--bad:#fb7185;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#08121f;--grid:#12263b;--card:#0f1d2e;--tx:#e6f0fa;--mut:#8da4bb;--bd:#223a52;--soft:#152a40;--pri:#22d3ee;--br:#fbbf24;--ok:#34d399;--bad:#fb7185;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font:500 15px/1.55 "Plus Jakarta Sans",system-ui,sans-serif;color:var(--tx);background:var(--bg) linear-gradient(var(--grid) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/28px 28px;min-height:100vh}
+.wrap{max-width:1180px;margin:auto;padding:18px 16px 28px}
+header{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{margin:0;font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+h1 span{color:var(--br)}
+.sub{margin:4px 0 0;color:var(--mut);font-size:14px}
+h2{margin:0 0 10px;font-size:17px;font-weight:700}
+.grid{display:grid;grid-template-columns:330px 1fr;gap:16px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.col{display:contents}.col:first-child>.card:first-child{order:-2}.col:last-child>.card:first-child{order:-1}}
+.help{margin-top:14px;padding-top:12px;border-top:1px dashed var(--bd)}
+.help p{margin:0 0 8px;font-size:13px;color:var(--mut)}
+#roHint{grid-template-columns:1fr;margin-top:10px}
+.col{display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;box-shadow:0 2px 0 var(--bd)}
+.btn{font:600 14px "Plus Jakarta Sans",sans-serif;color:var(--tx);background:var(--soft);border:1px solid var(--bd);border-radius:10px;padding:9px 12px;cursor:pointer;transition:transform .08s}
+.btn:hover{border-color:var(--pri)}.btn:active{transform:translateY(1px)}
+.btn:focus-visible,select:focus-visible,input:focus-visible,canvas:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.btn.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+:root[data-theme="dark"] .btn.on{color:#04202a}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.on{color:#04202a}}
+.btn.go{background:var(--br);color:#1b1200;border-color:var(--br)}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+label.l{display:block;font-size:13px;color:var(--mut);margin:12px 0 6px}
+select,input[type=text]{width:100%;font:600 15px "Plus Jakarta Sans",sans-serif;color:var(--tx);background:var(--soft);border:1px solid var(--bd);border-radius:10px;padding:10px}
+input[type=range]{width:100%;accent-color:var(--pri);height:28px}
+.info{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--mut);margin-top:10px}.info b{color:var(--tx)}
+.stage{background:#0b1626;border-radius:12px;padding:6px;border:1px solid var(--bd)}
+canvas{display:block;width:100%;height:auto;border-radius:8px;touch-action:none;cursor:grab}
+canvas:active{cursor:grabbing}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.st{font-size:14px;font-weight:600}
+.ro{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+@media(max-width:560px){.ro{grid-template-columns:1fr}}
+.ro div{background:var(--soft);border:1px solid var(--bd);border-radius:10px;padding:8px 12px}
+.ro small{display:block;color:var(--mut);font-size:12px}
+.ro b{font:700 16px "JetBrains Mono",monospace}
+.hint{font-size:13px;color:var(--mut);margin:10px 0 0}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-weight:600;font-size:14px}
+.fb.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.fb.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.fb.warn{background:color-mix(in srgb,var(--br) 20%,transparent);color:var(--tx)}
+.sol{margin-top:10px;padding:10px 12px;border-left:4px solid var(--pri);background:var(--soft);border-radius:0 10px 10px 0;font:500 13px/1.6 "JetBrains Mono",monospace}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.f2{grid-template-columns:1fr}}
+.f2 div{background:var(--soft);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;font-size:13px}
+.f2 code{display:block;font:700 14px "JetBrains Mono",monospace;color:var(--pri);margin:2px 0 4px}
+dialog{border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);width:min(720px,94vw);max-height:88vh;padding:20px;overflow:auto}
+dialog::backdrop{background:rgba(5,12,22,.65)}
+dialog h3{margin:14px 0 4px;font-size:15px}dialog p,dialog li{font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--bd)}td.m{font-family:"JetBrains Mono",monospace}
+.x{float:right}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Jamik<span>Sim</span></h1>
+    <p class="sub">Simulator jangka sorong (0,05 mm) dan mikrometer sekrup (0,01 mm)</p>
+  </div>
+  <div class="row" style="flex:none">
+    <button class="btn" id="bTut">📖 Panduan membaca</button>
+    <button class="btn go" id="bKey">🔒 Kunci jawaban guru</button>
+  </div>
+</header>
+
+<div class="grid">
+  <div class="col">
+    <section class="card">
+      <h2>1. Pilih alat dan benda</h2>
+      <div class="row">
+        <button class="btn on" id="tc">📏 Jangka sorong</button>
+        <button class="btn" id="tm">🔩 Mikrometer</button>
+      </div>
+      <label class="l" for="sel">Benda yang diukur</label>
+      <select id="sel"></select>
+      <div class="info"><span>Yang diukur: <b id="iD">-</b></span><span>Alat: <b id="iT">-</b></span></div>
+    </section>
+
+    <section class="card">
+      <h2>2. Atur alat ukur</h2>
+      <div class="row">
+        <button class="btn go" id="bClamp">Jepit benda</button>
+        <button class="btn" id="bOpen">Buka rahang</button>
+      </div>
+      <label class="l" for="sl">Posisi rahang (atau seret alat di gambar)</label>
+      <input type="range" id="sl" min="0" max="800" step="1" value="0">
+      <div class="row" style="margin-top:6px">
+        <button class="btn" data-k="-2" id="k-2">−1 mm</button>
+        <button class="btn" data-k="-1" id="k-1">−halus</button>
+        <button class="btn" data-k="1" id="k1">+halus</button>
+        <button class="btn" data-k="2" id="k2">+1 mm</button>
+      </div>
+      <p class="hint">Papan ketik: klik alat, lalu tekan ← → (Shift = 1 mm).</p>
+    </section>
+
+    <section class="card">
+      <h2>3. Tulis hasil bacaanmu</h2>
+      <label class="l" for="ans" style="margin-top:0">Hasil ukur (mm)</label>
+      <input type="text" id="ans" inputmode="decimal" placeholder="contoh: 14,35" autocomplete="off">
+      <div class="row" style="margin-top:8px">
+        <button class="btn on" id="chk">Periksa jawaban</button>
+        <button class="btn" id="nx">Benda berikutnya</button>
+      </div>
+      <div id="fb" class="fb" hidden></div>
+      <div class="info"><span>Skor: <b id="score">0 benar dari 0</b></span></div>
+      <div class="help">
+        <p>Sudah coba baca sendiri? Baru buka bantuan.</p>
+        <div class="row"><button class="btn" id="bLr">👁️ Tampilkan cara hitung</button><button class="btn" id="bSol">Lihat pembahasan</button></div>
+        <div class="ro" id="roHint" hidden>
+        <div><small>Skala utama (SU)</small><b id="rsu">?</b></div>
+        <div><small>Skala nonius (SN)</small><b id="rsn">?</b></div>
+        <div><small>Hasil</small><b id="rres">?</b></div>
+      </div>
+        <div id="sol" class="sol" hidden></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="card">
+      <div class="bar">
+        <span class="st" id="st"></span>
+      </div>
+      <div class="stage"><canvas id="cv" tabindex="0" aria-label="Alat ukur. Seret ke kiri atau kanan untuk menggeser rahang."></canvas></div>
+    </section>
+    <section class="card f2">
+      <div><b>Jangka sorong</b><code>Hasil = SU + SN × 0,05 mm</code>SU: garis mm tepat di kiri angka nol nonius. SN: nomor garis nonius yang lurus dengan garis skala utama.</div>
+      <div><b>Mikrometer sekrup</b><code>Hasil = SU + SN × 0,01 mm</code>SU: garis terakhir yang terlihat di selubung (kelipatan 0,5 mm). SN: angka selubung putar di garis mendatar.</div>
+    </section>
+  </div>
+</div>
+</div>
+
+<dialog id="dTut">
+  <button class="btn x" onclick="this.closest('dialog').close()">Tutup ✕</button>
+  <h2>Panduan membaca alat ukur</h2>
+  <div class="row" style="margin:10px 0"><button class="btn on" id="pC">Jangka sorong</button><button class="btn" id="pM">Mikrometer sekrup</button></div>
+  <div id="gC">
+    <p>Ketelitian 0,05 mm karena skala nonius punya 20 garis yang panjang totalnya 19 mm.</p>
+    <h3>Langkah membaca</h3>
+    <ol><li>Rapatkan rahang ke benda sampai pas, jangan ditekan keras.</li>
+    <li>SU: lihat angka nol nonius. Garis mm skala utama tepat di kirinya adalah SU.</li>
+    <li>SN: cari garis nonius yang paling lurus dengan garis skala utama. Nomor garisnya dikali 0,05 mm.</li>
+    <li>Jumlahkan: hasil = SU + SN × 0,05.</li></ol>
+    <h3>Contoh</h3><p>SU = 14 mm, garis nonius ke-6 lurus, maka hasil = 14 + 6 × 0,05 = 14,30 mm.</p>
+  </div>
+  <div id="gM" hidden>
+    <p>Satu putaran selubung putar menggeser spindel 0,5 mm. Selubung dibagi 50 bagian, jadi 1 bagian = 0,01 mm.</p>
+    <h3>Langkah membaca</h3>
+    <ol><li>Putar sampai spindel menyentuh benda.</li>
+    <li>SU: baca garis terakhir yang terlihat di selubung tetap. Garis di bawah garis mendatar bernilai 0,5 mm.</li>
+    <li>SN: baca angka selubung putar yang tepat di garis mendatar, lalu kalikan 0,01 mm.</li>
+    <li>Jumlahkan: hasil = SU + SN × 0,01.</li></ol>
+    <h3>Contoh</h3><p>SU = 7,5 mm, SN = 35, maka hasil = 7,5 + 35 × 0,01 = 7,85 mm.</p>
+  </div>
+  <h3>Tips</h3>
+  <p>Mata tegak lurus skala agar tidak salah baca (paralaks). Pastikan alat menunjuk nol saat tertutup, kalau tidak ada galat nol yang harus dikoreksi.</p>
+</dialog>
+
+<dialog id="dKey">
+  <button class="btn x" onclick="this.closest('dialog').close()">Tutup ✕</button>
+  <h2>Kunci jawaban guru</h2>
+  <div id="lock">
+    <p>Masukkan kata sandi untuk membuka tabel kunci.</p>
+    <input type="text" id="pw" placeholder="Kata sandi" autocomplete="off" style="-webkit-text-security:disc">
+    <div class="row" style="margin-top:8px"><button class="btn go" id="unlock">Buka kunci</button></div>
+    <div id="pe" class="fb bad" hidden>Kata sandi salah. Coba lagi.</div>
+  </div>
+  <div id="ans-wrap" hidden>
+    <table><thead><tr><th>No</th><th>Benda</th><th>Alat</th><th>SU</th><th>SN</th><th>Hasil</th></tr></thead><tbody id="tb"></tbody></table>
+    <div class="row" style="margin-top:10px"><button class="btn" id="relock">Kunci kembali</button></div>
+  </div>
+</dialog>
+
+<script>
+const OBJ=[
+{n:"Koin Rp 1000",w:1.80,t:"m",d:"Ketebalan",s:"r",c:"#e2e8f0",e:"🪙"},
+{n:"Kelereng kaca",w:14.30,t:"c",d:"Diameter",s:"o",c:"#38bdf8",e:"🔵"},
+{n:"Pelat seng",w:0.65,t:"m",d:"Ketebalan",s:"r",c:"#94a3b8",e:"🔲"},
+{n:"Kawat tembaga",w:2.34,t:"m",d:"Diameter",s:"o",c:"#f97316",e:"🧵"},
+{n:"Cincin logam",w:18.70,t:"c",d:"Diameter luar",s:"g",c:"#fbbf24",e:"💍"},
+{n:"Baut M8",w:7.85,t:"c",d:"Diameter batang",s:"r",c:"#a1a1aa",e:"🔩"},
+{n:"Tabung reaksi kaca",w:15.20,t:"c",d:"Diameter luar",s:"o",c:"#67e8f9",e:"🧪"},
+{n:"Tumpukan 10 lembar HVS",w:1.05,t:"m",d:"Ketebalan total",s:"r",c:"#f8fafc",e:"📄"},
+{n:"Kartu memori SD",w:2.10,t:"m",d:"Ketebalan",s:"r",c:"#2563eb",e:"💾"},
+{n:"Balok kayu kecil",w:25.40,t:"c",d:"Lebar",s:"r",c:"#b45309",e:"🪵"}];
+const $=id=>document.getElementById(id);
+const S={t:"c",i:1,u:0,uf:0,ok:0,tot:0,hint:false};
+const W=1000,H=440,K=14,cv=$("cv"),g=cv.getContext("2d");
+const cur=()=>OBJ[S.i],unit=(t=S.t)=>t=="c"?.05:.01,maxU=()=>S.t=="c"?800:2500;
+const minU=()=>Math.round(cur().w/unit());
+const fmt=(x,d=2)=>x.toFixed(d).replace(".",",");
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+function parts(u,t=S.t){const su=t=="c"?Math.floor(u/20):Math.floor(u/50)*.5,sn=t=="c"?u%20:u%50;return{su,sn,add:sn*unit(t)}}
+
+/* ---------- state ---------- */
+function setU(v){S.u=cl(Math.round(v),minU(),maxU());S.uf=S.u;sync()}
+function sync(){$("sl").value=S.u;readout();draw()}
+function readout(){
+  const p=parts(S.u),L=S.hint,c=S.t=="c";
+  $("rsu").textContent=L?fmt(p.su,c?0:1)+" mm":"?";
+  $("rsn").textContent=L?p.sn+" × "+(c?"0,05":"0,01")+" = "+fmt(p.add)+" mm":"?";
+  $("rres").textContent=L?fmt(S.u*unit())+" mm":"? mm";
+  $("st").textContent=S.u==minU()?"✅ Benda terjepit pas, siap dibaca":"↔ Masih ada celah "+fmt((S.u-minU())*unit())+" mm. Rapatkan rahang.";
+}
+function selectObj(i){
+  S.i=i;S.t=cur().t;$("sel").value=i;
+  $("tc").classList.toggle("on",S.t=="c");$("tm").classList.toggle("on",S.t=="m");
+  $("sl").min=minU();$("sl").max=maxU();
+  $("iD").textContent=cur().d;$("iT").textContent=S.t=="c"?"Jangka sorong":"Mikrometer sekrup";
+  const h=S.t=="c"?"0,05":"0,01";$("k-1").textContent="−"+h;$("k1").textContent="+"+h;
+  $("fb").hidden=true;$("sol").hidden=true;$("ans").value="";
+  S.hint=false;$("bLr").innerHTML="👁️ Tampilkan cara hitung";$("roHint").hidden=true;
+  stop();setU(minU()+Math.round((4+Math.random()*5)/unit()));
+}
+let raf=0;const stop=()=>cancelAnimationFrame(raf);
+function goTo(t){stop();const f=()=>{const d=t-S.u;if(!d)return;setU(S.u+Math.sign(d)*Math.max(1,Math.ceil(Math.abs(d)*.12)));raf=requestAnimationFrame(f)};f()}
+
+/* ---------- drawing helpers ---------- */
+function fit(){const d=Math.min(2,devicePixelRatio||1);cv.width=W*d;cv.height=H*d;g.setTransform(d,0,0,d,0,0);draw()}
+function steel(x,y,w,h,v){const q=v?g.createLinearGradient(x,y,x+w,y):g.createLinearGradient(x,y,x,y+h);[[0,"#e5e7eb"],[.45,"#f8fafc"],[.58,"#cbd5e1"],[1,"#8b9bb0"]].forEach(a=>q.addColorStop(a[0],a[1]));return q}
+function rr(x,y,w,h,r,f,s){g.beginPath();g.roundRect(x,y,w,h,r);if(f){g.fillStyle=f;g.fill()}if(s){g.strokeStyle=s;g.lineWidth=1.5;g.stroke()}}
+function ln(x1,y1,x2,y2,c,w){g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.strokeStyle=c;g.lineWidth=w;g.stroke()}
+function tx(t,x,y,f,c,a){g.font=f;g.fillStyle=c;g.textAlign=a||"center";g.fillText(t,x,y)}
+function pill(x,y,t,c){g.font="700 12px 'JetBrains Mono',monospace";const w=g.measureText(t).width+16;x=cl(x-w/2,4,W-w-4);g.fillStyle=c;g.beginPath();g.roundRect(x,y,w,22,11);g.fill();tx(t,x+8,y+15,"700 12px 'JetBrains Mono',monospace","#fff","left")}
+function bench(){
+  const q=g.createLinearGradient(0,0,0,H);q.addColorStop(0,"#0b1626");q.addColorStop(1,"#13294a");g.fillStyle=q;g.fillRect(0,0,W,H);
+  g.strokeStyle="rgba(120,160,200,.08)";g.lineWidth=1;
+  for(let x=0;x<W;x+=40){g.beginPath();g.moveTo(x,0);g.lineTo(x,H);g.stroke()}
+  for(let y=0;y<H;y+=40){g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke()}
+}
+function obj(x,y,w,h){
+  const o=cur(),im=IMG[S.i];
+  if(im){const hh=o.s=="r"?64:w;g.drawImage(im,x,y-hh/2,w,hh);return}
+  g.save();
+  if(o.s=="r"){rr(x,y-h/2,w,h,2,o.c,"rgba(0,0,0,.5)");g.fillStyle="rgba(255,255,255,.22)";g.fillRect(x+1,y-h/2+1,Math.max(1,w*.25),h-2)}
+  else{const r=w/2,q=g.createRadialGradient(x+r*.7,y-r*.4,r*.1,x+r,y,r);q.addColorStop(0,"#fff");q.addColorStop(.35,o.c);q.addColorStop(1,"#0b1626");
+    g.beginPath();g.arc(x+r,y,r,0,7);g.fillStyle=q;g.fill();g.strokeStyle="rgba(0,0,0,.5)";g.lineWidth=1.5;g.stroke();
+    if(o.s=="g"){g.beginPath();g.arc(x+r,y,r*.6,0,7);g.fillStyle="#0b1626";g.fill();g.strokeStyle=o.c;g.stroke()}}
+  g.restore();
+}
+function caption(a,b){
+  tx(a,20,34,"700 18px 'Plus Jakarta Sans',sans-serif","#e6f0fa","left");
+  tx(b,20,56,"500 13px 'Plus Jakarta Sans',sans-serif","#8da4bb","left");
+  tx(cur().e+" "+cur().n+" · "+cur().d,W/2,H-18,"600 15px 'Plus Jakarta Sans',sans-serif","#cfe0f1");
+}
+
+/* ---------- jangka sorong ---------- */
+function drawC(){
+  const x0=70,v=S.u*.05,xs=x0+v*K,p=parts(S.u),L=S.hint;
+  bench();caption("Jangka sorong","Ketelitian 0,05 mm · seret alat ke kiri atau kanan");
+  if(S.u==minU()||S.u>0)obj(x0,305,cur().w*K,Math.min(60,cur().w*K+6));
+  // balok & rahang tetap
+  rr(x0-34,84,W-x0+26,116,10,steel(0,84,0,116),"#475569");
+  rr(x0-34,200,34,170,[0,0,8,8],steel(x0-34,0,34,0,1),"#475569");
+  // skala utama
+  tx("cm",x0-52,170,"600 12px 'JetBrains Mono',monospace","#334155");
+  for(let m=0;m<=64;m++){const x=x0+m*K,l=m%10==0?28:m%5==0?20:12;ln(x,200,x,200-l,"#0f172a",m%5==0?1.8:1);if(m%10==0)tx(m/10,x,200-34,"700 14px 'JetBrains Mono',monospace","#0f172a")}
+  // penggeser
+  rr(xs,200,306,88,[0,10,10,10],steel(0,200,0,88),"#475569");
+  rr(xs,200,34,170,[0,0,8,8],steel(xs,0,34,0,1),"#475569");
+  for(let i=0;i<9;i++)ln(xs+240+i*6,218,xs+240+i*6,268,"rgba(51,65,85,.55)",2);
+  // nonius
+  for(let n=0;n<=20;n++){const x=xs+n*.95*K,e=n%2==0;ln(x,200,x,200+(e?19:12),n==0?"#be123c":"#0f172a",n==0?2.2:1.2);if(e)tx(n/2,x,200+36,"700 12px 'JetBrains Mono',monospace",n==0?"#be123c":"#0f172a")}
+  tx("0,05 mm",xs+258,200+78,"600 11px 'JetBrains Mono',monospace","#334155");
+  if(L){
+    const xa=xs+p.sn*.95*K,xm=x0+p.su*K;
+    ln(xm,200,xm,200-36,"#0e7490",4);pill(xm,200-66,"SU = "+p.su+" mm","#0e7490");
+    ln(xa,200-14,xa,200+24,"#be123c",3);g.beginPath();g.arc(xa,200,7,0,7);g.strokeStyle="#be123c";g.lineWidth=2;g.stroke();
+    pill(xa,200+50,"SN = "+p.sn+" (garis lurus)","#be123c");
+  }
+}
+
+/* ---------- mikrometer sekrup ---------- */
+function drawM(){
+  const xA=60,cy=215,xf=xA+25*K+30,z=xf+17,v=S.u*.01,tip=xA+v*K,ed=z+v*K,R=68,p=parts(S.u),L=S.hint;
+  bench();caption("Mikrometer sekrup","Ketelitian 0,01 mm · seret untuk memutar selubung");
+  obj(xA,cy,cur().w*K,Math.min(64,cur().w*K+8));
+  rr(tip,cy-9,ed+20-tip,18,2,steel(0,cy-9,0,18),"#475569");
+  const P=()=>{g.beginPath();g.moveTo(xA-30,cy);g.lineTo(xA-30,cy+60);g.quadraticCurveTo(xA-30,cy+135,xA+50,cy+135);g.lineTo(xf-60,cy+135);g.quadraticCurveTo(xf,cy+135,xf,cy+70);g.lineTo(xf,cy)};
+  P();g.lineWidth=40;g.strokeStyle="#334155";g.stroke();P();g.lineWidth=33;g.strokeStyle="#c3cfdd";g.stroke();
+  rr(xA-30,cy-17,30,34,3,"#64748b","#334155");g.fillStyle="#f1f5f9";g.fillRect(xA-6,cy-12,6,24);
+  const sl=z+25*K+16;
+  rr(xf-18,cy-30,sl-xf+18,60,6,steel(0,cy-30,0,60),"#475569");
+  ln(z,cy,sl-10,cy,"#0f172a",1.6);
+  for(let m=0;m<=25;m++){const x=z+m*K;ln(x,cy,x,cy-(m%5==0?17:11),"#0f172a",m%5==0?1.8:1);if(m%5==0)tx(m,x,cy-23,"700 12px 'JetBrains Mono',monospace","#0f172a");if(m<25)ln(x+K/2,cy,x+K/2,cy+11,"#0f172a",1)}
+  // selubung putar
+  const q=g.createLinearGradient(0,cy-R,0,cy+R);[[0,"#5b6b80"],[.3,"#e2e8f0"],[.5,"#f8fafc"],[.75,"#c5d0dd"],[1,"#5b6b80"]].forEach(a=>q.addColorStop(a[0],a[1]));
+  g.beginPath();g.moveTo(ed,cy-R+14);g.lineTo(ed+22,cy-R);g.lineTo(ed+130,cy-R);g.lineTo(ed+130,cy+R);g.lineTo(ed+22,cy+R);g.lineTo(ed,cy+R-14);g.closePath();g.fillStyle=q;g.fill();g.strokeStyle="#334155";g.lineWidth=1.5;g.stroke();
+  for(let x=ed+70;x<ed+128;x+=5)ln(x,cy-R+3,x,cy+R-3,"rgba(30,41,59,.28)",1.5);
+  const s=p.sn;
+  for(let n=0;n<50;n++){
+    const d=((n-s+25)%50+50)%50-25,th=d*Math.PI/25;if(Math.abs(th)>1.3)continue;
+    const y=cy+R*Math.sin(th),a=Math.abs(y-cy),xe=ed+22*Math.max(0,(a-(R-14))/14),mj=n%5==0,hit=d==0&&L;
+    ln(xe,y,xe+(mj?24:15),y,hit?"#be123c":"#0f172a",hit?2.4:mj?1.8:1.1);
+    if(mj)tx(String(n).padStart(2,"0"),xe+28,y+4,"700 11px 'JetBrains Mono',monospace",hit?"#be123c":"#0f172a","left");
+  }
+  rr(ed+130,cy-40,50,80,8,steel(0,cy-40,0,80),"#475569");for(let x=ed+140;x<ed+176;x+=5)ln(x,cy-38,x,cy+38,"rgba(30,41,59,.4)",1.5);
+  if(L){
+    ln(z,cy,ed+40,cy,"rgba(190,18,60,.8)",1.4);
+    const xm=z+p.su*K;ln(xm,cy,xm,cy-44,"#0e7490",4);pill(xm,cy-76,"SU = "+fmt(p.su,1)+" mm","#0e7490");
+    pill(ed+62,cy+R+14,"SN = "+p.sn+" (di garis mendatar)","#be123c");
+  }
+}
+function draw(){S.t=="c"?drawC():drawM()}
+
+/* ---------- interaksi ---------- */
+let drag=false,lx=0;
+cv.addEventListener("pointerdown",e=>{stop();drag=true;S.uf=S.u;lx=e.clientX;cv.setPointerCapture(e.pointerId);cv.focus()});
+cv.addEventListener("pointermove",e=>{if(!drag)return;const sc=W/cv.getBoundingClientRect().width;S.uf=cl(S.uf+(e.clientX-lx)*sc*1.43,minU(),maxU());lx=e.clientX;const r=Math.round(S.uf);if(r!==S.u){S.u=r;sync()}});
+["pointerup","pointercancel"].forEach(t=>cv.addEventListener(t,()=>drag=false));
+cv.addEventListener("keydown",e=>{const d=e.key=="ArrowRight"?1:e.key=="ArrowLeft"?-1:0;if(!d)return;e.preventDefault();stop();setU(S.u+d*(e.shiftKey?Math.round(1/unit()):1))});
+$("sl").oninput=e=>{stop();setU(+e.target.value)};
+document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;stop();setU(S.u+Math.sign(k)*(Math.abs(k)==2?Math.round(1/unit()):1))});
+$("bClamp").onclick=()=>goTo(minU());
+$("bOpen").onclick=()=>{stop();setU(minU()+Math.round((4+Math.random()*5)/unit()))};
+$("bLr").onclick=()=>{S.hint=!S.hint;$("bLr").innerHTML=S.hint?"🙈 Sembunyikan cara hitung":"👁️ Tampilkan cara hitung";$("roHint").hidden=!S.hint;sync()};
+$("tc").onclick=()=>selectObj(OBJ.findIndex(o=>o.t=="c"));
+$("tm").onclick=()=>selectObj(OBJ.findIndex(o=>o.t=="m"));
+$("sel").onchange=e=>selectObj(+e.target.value);
+$("nx").onclick=()=>selectObj((S.i+1)%OBJ.length);
+
+function fb(c,t){const f=$("fb");f.className="fb "+c;f.textContent=t;f.hidden=false}
+function solution(){
+  const u=minU(),p=parts(u),c=S.t=="c",r=c?"0,05":"0,01";
+  return `SU = ${fmt(p.su,c?0:1)} mm\nSN = ${p.sn} → ${p.sn} × ${r} = ${fmt(p.add)} mm\nHasil = ${fmt(p.su,c?0:1)} + ${fmt(p.add)} = ${fmt(cur().w)} mm`;
+}
+$("chk").onclick=()=>{
+  if(S.u!=minU())return fb("warn","Jepit benda dulu sampai rahang menyentuh benda dengan pas, lalu baca skalanya.");
+  const v=parseFloat($("ans").value.replace(",","."));
+  if(isNaN(v))return fb("warn","Tulis dulu hasil ukurmu dalam mm.");
+  S.tot++;
+  if(Math.abs(v-cur().w)<.0005){S.ok++;fb("ok","🎉 Benar! Hasilnya "+fmt(cur().w)+" mm.")}
+  else fb("bad","Belum tepat. Cek lagi SU dan garis nonius yang lurus, lalu hitung ulang.");
+  $("score").textContent=S.ok+" benar dari "+S.tot;
+};
+$("ans").onkeydown=e=>{if(e.key=="Enter")$("chk").click()};
+$("bSol").onclick=()=>{const s=$("sol");s.textContent=solution();s.hidden=!s.hidden};
+
+/* ---------- dialog ---------- */
+$("bTut").onclick=()=>$("dTut").showModal();
+const tab=c=>{$("gC").hidden=!c;$("gM").hidden=c;$("pC").classList.toggle("on",c);$("pM").classList.toggle("on",!c)};
+$("pC").onclick=()=>tab(true);$("pM").onclick=()=>tab(false);
+$("bKey").onclick=()=>$("dKey").showModal();
+function unlock(){if($("pw").value.trim()=="GURU2026"){$("lock").hidden=true;$("ans-wrap").hidden=false;$("pe").hidden=true;$("pw").value=""}else $("pe").hidden=false}
+$("unlock").onclick=unlock;$("pw").onkeydown=e=>{if(e.key=="Enter")unlock()};
+$("relock").onclick=()=>{$("ans-wrap").hidden=true;$("lock").hidden=false};
+$("tb").innerHTML=OBJ.map((o,i)=>{const u=Math.round(o.w/unit(o.t)),p=parts(u,o.t),c=o.t=="c";
+  return `<tr><td>${i+1}</td><td>${o.n}<br><small>${o.d}</small></td><td>${c?"Jangka sorong":"Mikrometer"}</td><td class="m">${fmt(p.su,c?0:1)} mm</td><td class="m">${p.sn}</td><td class="m"><b>${fmt(o.w)} mm</b></td></tr>`}).join("");
+
+/* ---------- mulai ---------- */
+$("sel").innerHTML=OBJ.map((o,i)=>`<option value="${i}">${i+1}. ${o.n} (${o.t=="c"?"jangka sorong":"mikrometer"})</option>`).join("");
+
+// Fungsi pembantu untuk mengubah string SVG menjadi Data URI
+const svgURI = (svg) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+
+// Gambar benda dengan efek 3D menggunakan SVG murni (tanpa file eksternal)
+const FOTO = {
+  0: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" rx="8" fill="url(#g)"/><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e2e8f0"/><stop offset="20%" stop-color="#ffffff"/><stop offset="50%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#475569"/></linearGradient></svg>`),
+  1: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="49" fill="url(#g)"/><radialGradient id="g" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#bae6fd"/><stop offset="40%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#0369a1"/></radialGradient></svg>`),
+  2: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" fill="url(#g)"/><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#cbd5e1"/><stop offset="30%" stop-color="#f8fafc"/><stop offset="100%" stop-color="#64748b"/></linearGradient></svg>`),
+  3: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="49" fill="url(#g)"/><radialGradient id="g" cx="35%" cy="35%" r="65%"><stop offset="0%" stop-color="#fdba74"/><stop offset="40%" stop-color="#ea580c"/><stop offset="100%" stop-color="#7c2d12"/></radialGradient></svg>`),
+  4: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="none" stroke="url(#g)" stroke-width="24"/><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fef08a"/><stop offset="40%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#713f12"/></linearGradient></svg>`),
+  5: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" fill="url(#g)"/><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d4d4d8"/><stop offset="30%" stop-color="#fafafa"/><stop offset="100%" stop-color="#52525b"/></linearGradient><path d="M0,15 L100,35 M0,35 L100,55 M0,55 L100,75 M0,75 L100,95" stroke="#3f3f46" stroke-width="4" fill="none"/></svg>`),
+  6: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="#0891b2" fill-opacity="0.15" stroke="url(#g)" stroke-width="12"/><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#cffafe"/><stop offset="50%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#164e63"/></linearGradient></svg>`),
+  7: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" fill="#f8fafc"/><path d="M0,20 L100,20 M0,40 L100,40 M0,60 L100,60 M0,80 L100,80" stroke="#cbd5e1" stroke-width="3"/></svg>`),
+  8: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" rx="4" fill="#1e293b"/><path d="M0,25 L100,25 M0,75 L100,75" stroke="#0f172a" stroke-width="6"/></svg>`),
+  9: svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" fill="#92400e"/><path d="M-10,25 Q50,5 110,35 M-10,55 Q50,35 110,65 M-10,85 Q50,65 110,95" stroke="#78350f" stroke-width="4" fill="none"/></svg>`)
+};
+
+const IMG={};
+Object.keys(FOTO).forEach(i=>{const m=new Image();m.onload=()=>{IMG[i]=m;draw()};m.src=FOTO[i]});
+fit();selectObj(1);
+if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body>
+</html>
